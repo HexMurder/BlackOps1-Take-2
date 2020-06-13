@@ -47,13 +47,14 @@ void DirectxFunctions::DirectXInit(HWND hwnd)
 		D3DXCreateLine(DirectX.Device, &DirectX.Line);
 }
 
+
 void DirectxFunctions::RenderDirectX()
 {
 	DirectX.Device->BeginScene();
 	if (GetForegroundWindow() == Target.Window)
 	{
 		//Draw Here
-		Drawing::StringOutlined(1100, 3, "proto 1.0 by HexMurder.",
+		Drawing::StringOutlined(1100, 3, "Prototype v1.0 by HexMurder",
 			D3DCOLOR_ARGB(255, 32, 32, 32), D3DCOLOR_ARGB(255, 255, 128, 0), DirectX.Font);
 	}
 	DirectX.Device->EndScene();
@@ -61,7 +62,7 @@ void DirectxFunctions::RenderDirectX()
 	DirectX.Device->Clear(0, 0, D3DCLEAR_TARGET, 0, 1.0f, 0);
 }
 
-void MsgBoxAddy(DWORD addy)
+void MsgBoxAddy(uintptr_t addy)
 {
 	char szBuffer[1024];
 	sprintf(szBuffer, "%02x", addy);
@@ -89,7 +90,7 @@ void MsgBoxAddy(DWORD addy)
 //		EntityHook.hookAddress = ProcFuncs::FindPattern(processName, EntityHook.pattern, EntityHook.mask);
 //		EntityHook.hookJumpBack = EntityHook.hookAddress + EntityHook.hookSize;
 //		if (EntityHook.hookAddress)
-//			ProcFuncs::PlaceJMP((BYTE*)EntityHook.hookAddress, (DWORD)AsmEntityHook, EntityHook.hookSize);
+//			ProcFuncs::PlaceJMP((BYTE*)EntityHook.hookAddress, (uintptr_t)AsmEntityHook, EntityHook.hookSize);
 //
 //		RECT rect;
 //		GetWindowRect(Overlay.Window, &rect);

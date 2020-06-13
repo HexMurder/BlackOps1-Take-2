@@ -30,15 +30,14 @@ LRESULT CALLBACK WinProcedure(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPa
 DWORD WINAPI MainThread(LPVOID lpParam)
 {
 	//Credits to Icew0lf from MPGH for the Base, Directx overlay, and for helping me with numerous issues.
-	//ProcFuncs::CheckDWM();
-	//OverlayFunctions::GetTargetWindow();
-	//OverlayFunctions::CreateClass(WinProcedure, "overlay");
-	//OverlayFunctions::CreateWindowOverlay();
-	//DirectxFunctions::DirectXInit(Overlay.Window);
+	ProcFuncs::CheckDWM();
+	OverlayFunctions::GetTargetWindow();
+	OverlayFunctions::CreateClass(WinProcedure, "overlay");
+	OverlayFunctions::CreateWindowOverlay();
+	DirectxFunctions::DirectXInit(Overlay.Window);
 
 	while (!GetAsyncKeyState(VK_DELETE))
 	{
-
 		if (PeekMessage(&Overlay.Message, Overlay.Window, 0, 0, PM_REMOVE))
 		{
 			DispatchMessage(&Overlay.Message);
@@ -56,7 +55,7 @@ DWORD WINAPI MainThread(LPVOID lpParam)
 }
 
 
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
 	DisableThreadLibraryCalls(hModule);
 

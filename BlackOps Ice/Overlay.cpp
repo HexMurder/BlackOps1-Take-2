@@ -4,7 +4,7 @@
 HINSTANCE hInstance;
 HANDLE pHandle;
 DWORD pid;
-DWORD Module;
+uintptr_t Module;
 
 
 void OverlayFunctions::Unload()

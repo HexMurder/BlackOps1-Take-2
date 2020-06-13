@@ -29,7 +29,7 @@ struct target_t
 	char Name[256];
 	HWND Window;
 	RECT Size;
-	DWORD Style;
+	uintptr_t Style;
 	BOOL Checked;
 };
 extern target_t Target;
@@ -47,5 +47,5 @@ namespace OverlayFunctions
 extern HINSTANCE hInstance;
 extern HANDLE pHandle;
 extern DWORD pid;
-extern DWORD Module;
+extern uintptr_t Module;
 #endif // !WINDOW

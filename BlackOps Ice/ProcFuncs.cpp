@@ -13,10 +13,10 @@ void ProcFuncs::CheckDWM()
 	}
 }
 
-DWORD ProcFuncs::GetModuleBase(DWORD dwProcessIdentifier, TCHAR *lpszModuleName)
+uintptr_t ProcFuncs::GetModuleBase(uintptr_t dwProcessIdentifier, TCHAR *lpszModuleName)
 {
 	HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, dwProcessIdentifier);
-	DWORD dwModuleBaseAddress = 0;
+	uintptr_t dwModuleBaseAddress = 0;
 	if (hSnapshot != INVALID_HANDLE_VALUE)
 	{
 		MODULEENTRY32 ModuleEntry32 = { 0 };
@@ -27,7 +27,7 @@ DWORD ProcFuncs::GetModuleBase(DWORD dwProcessIdentifier, TCHAR *lpszModuleName)
 			{
 				if (strcmp(ModuleEntry32.szModule, lpszModuleName) == 0)
 				{
-					dwModuleBaseAddress = (DWORD)ModuleEntry32.modBaseAddr;
+					dwModuleBaseAddress = (uintptr_t)ModuleEntry32.modBaseAddr;
 					break;
 				}
 			} while (Module32Next(hSnapshot, &ModuleEntry32));
@@ -64,7 +64,7 @@ void ProcFuncs::memRestore(BYTE* dst, char* originalPattern, unsigned int size)
 }
 
 
-void ProcFuncs::PlaceJMP(BYTE* Address, DWORD jumpTo, DWORD length)
+void ProcFuncs::PlaceJMP(BYTE* Address, uintptr_t jumpTo, uintptr_t length)
 {
 	DWORD dwOldProtect, dwBkup, dwRelAddr;
 
@@ -72,18 +72,18 @@ void ProcFuncs::PlaceJMP(BYTE* Address, DWORD jumpTo, DWORD length)
 	VirtualProtect(Address, length, PAGE_EXECUTE_READWRITE, &dwOldProtect);
 
 	// Calculate the "distance" we're gonna have to jump - the size of the JMP instruction
-	dwRelAddr = (DWORD)(jumpTo - (DWORD)Address) - 5;
+	dwRelAddr = (uintptr_t)(jumpTo - (uintptr_t)Address) - 5;
 
 	// Write the JMP opcode @ our jump position...
 	*Address = 0xE9;
 
 	// Write the offset to where we're gonna jump
 	//The instruction will then become JMP ff002123 for example
-	*((DWORD*)(Address + 0x1)) = dwRelAddr;
+	*((uintptr_t*)(Address + 0x1)) = dwRelAddr;
 
 	// Overwrite the rest of the bytes with NOPs
 	//ensuring no instruction is Half overwritten(To prevent any crashes)
-	for (DWORD x = 0x5; x < length; x++)
+	for (uintptr_t x = 0x5; x < length; x++)
 		*(Address + x) = 0x90;
 
 	// Restore the default permissions
@@ -101,7 +101,7 @@ MODULEINFO ProcFuncs::GetModuleInfo(char* szModule)
 	return modinfo;
 }
 
-DWORD64 ProcFuncs::FindPattern(char* module, char* pattern, char* mask)
+uintptr_t ProcFuncs::FindPattern(char* module, char* pattern, char* mask)
 {
 	//Get all module related information
 	MODULEINFO mInfo = GetModuleInfo(module);
@@ -109,16 +109,16 @@ DWORD64 ProcFuncs::FindPattern(char* module, char* pattern, char* mask)
 	//Assign our base and module size
 	//Having the values right is ESSENTIAL, this makes sure
 	//that we don't scan unwanted memory and leading our game to crash
-	DWORD64 base = (DWORD64)mInfo.lpBaseOfDll;
-	DWORD64 size = (DWORD64)mInfo.SizeOfImage;
+	uintptr_t base = (uintptr_t)mInfo.lpBaseOfDll;
+	uintptr_t size = (uintptr_t)mInfo.SizeOfImage;
 
 	//Get length for our mask, this will allow us to loop through our array
-	DWORD64 patternLength = (DWORD64)strlen(mask);
+	uintptr_t patternLength = (uintptr_t)strlen(mask);
 
-	for (DWORD64 i = 0; i < size - patternLength; i++)
+	for (uintptr_t i = 0; i < size - patternLength; i++)
 	{
 		bool found = true;
-		for (DWORD64 j = 0; j < patternLength; j++)
+		for (uintptr_t j = 0; j < patternLength; j++)
 		{
 			//if we have a ? in our mask then we have true by default, 
 			//or if the bytes match then we keep searching until finding it or not
@@ -137,7 +137,7 @@ DWORD64 ProcFuncs::FindPattern(char* module, char* pattern, char* mask)
 }
 
 template <class TypeValue>
-TypeValue ProcFuncs::ReadMemory(DWORD Address)
+TypeValue ProcFuncs::ReadMemory(uintptr_t Address)
 {
 	TypeValue Value;
 	ReadProcessMemory(pHandle, (LPCVOID*)Address, &Value, sizeof(TypeValue), 0);
@@ -145,7 +145,7 @@ TypeValue ProcFuncs::ReadMemory(DWORD Address)
 }
 
 template <class TypeValue>
-TypeValue ProcFuncs::WriteMemory(DWORD Address)
+TypeValue ProcFuncs::WriteMemory(uintptr_t Address)
 {
 	TypeValue Value;
 	WriteProcessMemory(pHandle, (LPCVOID*)Address, &Value, sizeof(TypeValue), 0);
