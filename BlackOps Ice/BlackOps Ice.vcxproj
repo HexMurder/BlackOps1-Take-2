@@ -167,6 +167,7 @@
     <ClInclude Include="Drawing.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityListHook.h" />
+    <ClInclude Include="Hooks.h" />
     <ClInclude Include="ProcFuncs.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="ModuleMgr.h" />

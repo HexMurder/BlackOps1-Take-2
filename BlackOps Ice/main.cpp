@@ -1,6 +1,19 @@
 #include "main.h"
+#include "EntityListHook.h"
 
 char* processName = "BlackOps.exe";
+bool hooksInitialized = false;
+
+void InitHooks()
+{
+	EntityHook.pattern = patternManager.entityHook;
+	EntityHook.mask = "xxxxxxxx";
+	EntityHook.hookSize = 8;
+	EntityHook.hookAddress = ProcessFunctions::FindPattern(processName, EntityHook.pattern, EntityHook.mask);
+	EntityHook.hookJumpBack = EntityHook.hookAddress + EntityHook.hookSize;
+	if (EntityHook.hookAddress)
+		ProcessFunctions::PlaceJMP((BYTE*)EntityHook.hookAddress, (DWORD)AsmEntityHook, EntityHook.hookSize);
+}
 
 void Unload()
 {
@@ -38,6 +51,8 @@ DWORD WINAPI MainThread(LPVOID lpParam)
 
 	while (!GetAsyncKeyState(VK_DELETE))
 	{
+		if(!hooksInitialized)
+
 		if (PeekMessage(&Overlay.Message, Overlay.Window, 0, 0, PM_REMOVE))
 		{
 			DispatchMessage(&Overlay.Message);
